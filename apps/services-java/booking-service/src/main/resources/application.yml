@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: booking-service
+  datasource:
+    url: jdbc:mysql://mysql:3306/gym_bookings?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: rootpassword
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8085

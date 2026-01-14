@@ -1,0 +1,217 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # JAVA SERVICES
+  # ==========================================
+  eureka-server:
+    build:
+      context: ./apps/services-java/eureka-server
+      dockerfile: Dockerfile.dev
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - gym-network
+    restart: on-failure
+
+  api-gateway:
+    build:
+      context: ./apps/services-java/api-gateway
+      dockerfile: Dockerfile.dev
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    networks:
+      - gym-network
+    restart: on-failure
+
+  user-service:
+    build:
+      context: ./apps/services-java/user-service
+      dockerfile: Dockerfile.dev
+    container_name: user-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gym_users?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_DATA_REDIS_HOST: redis
+    depends_on:
+      - eureka-server
+      - api-gateway
+    networks:
+      - gym-network
+
+  payment-service:
+    build:
+      context: ./apps/services-java/payment-service
+      dockerfile: Dockerfile.dev
+    container_name: payment-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gym_payments?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    networks:
+      - gym-network
+
+  access-control-service:
+    build:
+      context: ./apps/services-java/access-control-service
+      dockerfile: Dockerfile.dev
+    container_name: access-control-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gym_access?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    networks:
+      - gym-network
+
+  booking-service:
+    build:
+      context: ./apps/services-java/booking-service
+      dockerfile: Dockerfile.dev
+    container_name: booking-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gym_bookings?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    networks:
+      - gym-network
+
+  notification-service:
+    build:
+      context: ./apps/services-java/notification-service
+      dockerfile: Dockerfile.dev
+    container_name: notification-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gym_notifications?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - eureka-server
+    networks:
+      - gym-network
+
+  analytics-service:
+    build:
+      context: ./apps/services-java/analytics-service
+      dockerfile: Dockerfile.dev
+    container_name: analytics-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gym_analytics?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    networks:
+      - gym-network
+
+  # ==========================================
+  # PYTHON SERVICES (AI)
+  # ==========================================
+  chatbot-ai:
+    build:
+      context: ./apps/services-python/chatbot-ai
+      dockerfile: Dockerfile.dev
+    container_name: chatbot-ai
+    ports:
+      - "8087:8087"
+    networks:
+      - gym-network
+
+  attendance-prediction:
+    build:
+      context: ./apps/services-python/attendance-prediction
+      dockerfile: Dockerfile.dev
+    container_name: attendance-prediction
+    ports:
+      - "8088:8088"
+    networks:
+      - gym-network
+
+  vision-ai:
+    build:
+      context: ./apps/services-python/vision-ai
+      dockerfile: Dockerfile.dev
+    container_name: vision-ai
+    ports:
+      - "8089:8089"
+    networks:
+      - gym-network
+
+  workout-planner:
+    build:
+      context: ./apps/services-python/workout-planner
+      dockerfile: Dockerfile.dev
+    container_name: workout-planner
+    ports:
+      - "8090:8090"
+    networks:
+      - gym-network
+
+  recommendation-ai:
+    build:
+      context: ./apps/services-python/recommendation-ai
+      dockerfile: Dockerfile.dev
+    container_name: recommendation-ai
+    ports:
+      - "8092:8092"
+    networks:
+      - gym-network
+
+  nutrition-ai:
+    build:
+      context: ./apps/services-python/nutrition-ai
+      dockerfile: Dockerfile.dev
+    container_name: nutrition-ai
+    ports:
+      - "8093:8093"
+    networks:
+      - gym-network
+
+  churn-prediction:
+    build:
+      context: ./apps/services-python/churn-prediction
+      dockerfile: Dockerfile.dev
+    container_name: churn-prediction
+    ports:
+      - "8094:8094"
+    networks:
+      - gym-network
+
+  sentiment-analysis:
+    build:
+      context: ./apps/services-python/sentiment-analysis
+      dockerfile: Dockerfile.dev
+    container_name: sentiment-analysis
+    ports:
+      - "8095:8095"
+    networks:
+      - gym-network
+
+  # ==========================================
+  # FRONTEND
+  # ==========================================
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend
+    ports:
+      - "3000:5173"
+    environment:
+      - VITE_API_URL=/api
+    depends_on:
+      - api-gateway
+    networks:
+      - gym-network
+
+networks:
+  gym-network:
+    external: true

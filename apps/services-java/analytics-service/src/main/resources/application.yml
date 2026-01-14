@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: analytics-service
+  datasource:
+    url: jdbc:mysql://mysql:3306/gym_analytics?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: rootpassword
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8086
