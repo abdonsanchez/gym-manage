@@ -15,6 +15,8 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/api/users/**
+          filters:
+            - RewritePath=/api/users/(?<segment>.*), /api/${segment}
         - id: payment-service
           uri: lb://payment-service
           predicates:
@@ -35,6 +37,10 @@ spring:
           uri: lb://analytics-service
           predicates:
             - Path=/api/analytics/**
+        - id: churn-prediction-service
+          uri: http://churn-prediction:8094
+          predicates:
+            - Path=/api/ai/churn/**
 
 eureka:
   client:

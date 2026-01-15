@@ -13,7 +13,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  
+
   # Redis Configuration
   data:
     redis:
@@ -37,7 +37,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://eureka-server:8761/eureka/
-    enabled: false # Disabled for now as we don't have Eureka Server yet
+    enabled: true
 
 management:
   endpoints:
