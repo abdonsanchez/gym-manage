@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Servicio para el análisis de datos y generación de reportes.
+ */
 @Service
 @RequiredArgsConstructor
 public class AnalyticsService {
@@ -18,10 +21,22 @@ public class AnalyticsService {
     private final AttendanceMetricRepository attendanceRepository;
     private final RevenueReportRepository revenueRepository;
 
+    /**
+     * Recupera métricas de asistencia filtradas por fecha.
+     *
+     * @param start Fecha inicio del filtro.
+     * @param end   Fecha fin del filtro.
+     * @return Lista de métricas.
+     */
     public List<AttendanceMetric> getAttendanceMetrics(LocalDate start, LocalDate end) {
         return attendanceRepository.findByDateBetween(start, end);
     }
 
+    /**
+     * Crea un reporte de ganancias simulado para propósitos de demostración.
+     *
+     * @return Reporte financiero guardado.
+     */
     public RevenueReport generateMockRevenueReport() {
         // Mock logic for demo purposes
         RevenueReport report = RevenueReport.builder()
