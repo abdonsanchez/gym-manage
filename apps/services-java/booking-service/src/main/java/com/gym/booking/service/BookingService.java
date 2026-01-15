@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Servicio de lógica de negocio para la gestión de reservas.
+ */
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -20,6 +23,16 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final ScheduleRepository scheduleRepository;
 
+    /**
+     * Crea una reserva validando la capacidad de la clase.
+     *
+     * @param memberId   ID del miembro.
+     * @param scheduleId ID de la clase/horario.
+     * @param date       Fecha de la reserva.
+     * @return La reserva confirmada.
+     * @throws EntityNotFoundException Si el horario no existe.
+     * @throws IllegalStateException   Si la clase está llena.
+     */
     @Transactional
     public Booking createBooking(Long memberId, Long scheduleId, LocalDate date) {
         ClassSchedule schedule = scheduleRepository.findById(scheduleId)
@@ -43,6 +56,12 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
+    /**
+     * Obtiene el historial de reservas de un miembro.
+     *
+     * @param memberId ID del miembro.
+     * @return Lista de reservas asociadas al miembro.
+     */
     @Transactional(readOnly = true)
     public List<Booking> getMemberBookings(Long memberId) {
         return bookingRepository.findByMemberId(memberId);
