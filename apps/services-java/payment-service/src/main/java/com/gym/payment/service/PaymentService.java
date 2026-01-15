@@ -11,17 +11,34 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Servicio de lógica de negocio para pagos y facturación.
+ */
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
     private final InvoiceRepository invoiceRepository;
 
+    /**
+     * Recupera todas las facturas de un miembro.
+     *
+     * @param memberId ID del miembro.
+     * @return Lista de facturas.
+     */
     @Transactional(readOnly = true)
     public List<Invoice> getInvoicesByMember(Long memberId) {
         return invoiceRepository.findByMemberId(memberId);
     }
 
+    /**
+     * Crea una nueva factura.
+     * Genera automáticamente un número de factura y fecha de vencimiento si no se
+     * proporcionan.
+     *
+     * @param invoice Datos de la factura.
+     * @return Factura guardada.
+     */
     @Transactional
     public Invoice createInvoice(Invoice invoice) {
         if (invoice.getInvoiceNumber() == null) {
@@ -33,6 +50,13 @@ public class PaymentService {
         return invoiceRepository.save(invoice);
     }
 
+    /**
+     * Procesa el pago de una factura, cambiando su estado a 'paid'.
+     *
+     * @param invoiceId ID de la factura.
+     * @return Factura pagada.
+     * @throws EntityNotFoundException Si la factura no existe.
+     */
     @Transactional
     public Invoice payInvoice(Long invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId)
