@@ -115,7 +115,6 @@
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
-    </dependency>
 
         <!-- Swagger / OpenAPI -->
         <dependency>

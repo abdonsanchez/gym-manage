@@ -1,24 +1,41 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, Query
+from pydantic import BaseModel, Field
 import random
-from datetime import datetime, time
+from datetime import datetime
 
-app = FastAPI(title="GestorGYM Attendance Prediction", version="1.0.0")
+app = FastAPI(
+    title="GestorGYM Attendance Prediction AI",
+    description="Microservicio de IA para predecir la afluencia y ocupación del gimnasio.",
+    version="1.0.0",
+    openapi_tags=[
+        {"name": "Predict", "description": "Endpoints de predicción de ocupación"},
+        {"name": "System", "description": "Health check y estado del sistema"}
+    ]
+)
 
 class PredictionResponse(BaseModel):
-    datetime: str
-    predicted_occupancy: int
-    occupancy_level: str # low, medium, high
+    datetime: str = Field(..., description="Fecha y hora de la predicción")
+    predicted_occupancy: int = Field(..., description="Cantidad estimada de personas")
+    occupancy_level: str = Field(..., description="Nivel de ocupación (low, medium, high)")
 
-@app.get("/")
+@app.get("/", tags=["System"])
 def read_root():
-    return {"status": "online", "service": "attendance-prediction"}
+    """
+    Health check endpoint.
+    """
+    return {"status": "online", "service": "attendance-prediction", "version": "1.0.0"}
 
-@app.get("/predict/occupancy", response_model=PredictionResponse)
-async def predict_occupancy(target_time: str = None):
-    # Mock prediction logic
-    # In reality, this would load a trained LSTM/Prophet model
+@app.get("/predict/occupancy", response_model=PredictionResponse, tags=["Predict"])
+async def predict_occupancy(
+    target_time: str = Query(None, description="Fecha/Hora objetivo (ISO 8601). Si se omite es 'ahora'.")
+):
+    """
+    **Predice la ocupación del gimnasio.**
     
+    Utiliza modelos de series temporales (simulado) para estimar cuántas personas
+    habrá en el gimnasio en un momento dado.
+    """
+    # Mock prediction logic (Prophet/LSTM placeholder)
     if not target_time:
         target_time = datetime.now().isoformat()
         
